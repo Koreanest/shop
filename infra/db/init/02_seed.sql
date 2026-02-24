@@ -1,0 +1,1 @@
+INSERT INTO __init_log(note) VALUES ('02_seed.sql executed');

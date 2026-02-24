@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS __init_log (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  ran_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  note VARCHAR(200)
+);
+
+INSERT INTO __init_log(note) VALUES ('01_schema.sql executed');
