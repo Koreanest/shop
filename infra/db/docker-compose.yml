@@ -6,7 +6,7 @@ services:
     ports:
       - "3307:3306"   # ⚠ 로컬 충돌 방지용
     environment:
-      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: shop
       MYSQL_USER: shop
       MYSQL_PASSWORD: shoppw
