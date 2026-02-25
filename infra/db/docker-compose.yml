@@ -8,8 +8,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: shop
-      MYSQL_USER: shop
-      MYSQL_PASSWORD: shoppw
+      MYSQL_USER: shop_usr
+      MYSQL_PASSWORD: 1234
       TZ: Asia/Seoul
     command:
       --character-set-server=utf8mb4
