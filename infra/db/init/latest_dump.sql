@@ -24,6 +24,21 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `shop` /*!40100 DEFAULT CHARACTER SET u
 USE `shop`;
 
 --
+-- Table structure for table `__init_log`
+--
+
+DROP TABLE IF EXISTS `__init_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `__init_log` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `ran_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `note` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `__init_log`
 --
 
@@ -32,6 +47,10 @@ LOCK TABLES `__init_log` WRITE;
 INSERT INTO `__init_log` VALUES (1,'2026-02-25 11:21:24','01_schema.sql executed'),(2,'2026-02-25 11:21:24','02_seed.sql executed');
 /*!40000 ALTER TABLE `__init_log` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'shop'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -42,5 +61,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-25 12:36:30
-
+-- Dump completed on 2026-02-25 11:32:57
