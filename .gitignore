@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+
+# Spring Boot
+*.jar
+*.war
+*.log
+
+# IDE
+.idea/
+*.iml
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
