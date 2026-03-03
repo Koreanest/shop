@@ -1,46 +1,77 @@
--- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
---
--- Host: localhost    Database: shop
--- ------------------------------------------------------
--- Server version	8.0.36
+USE shop;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+-- Users
+INSERT INTO users (id, email, password_hash, name, role)
+VALUES (10, 'admin@shop.com', 'CHANGE_ME', 'Admin', 'ADMIN')
+ON DUPLICATE KEY UPDATE email = VALUES(email);
 
---
--- Current Database: `shop`
---
+-- Brands
+INSERT INTO brands (id, name, slug, logo_url)
+VALUES (3, 'YONEX', 'yonex', '/uploads/brands/yonex.png')
+ON DUPLICATE KEY UPDATE name = VALUES(name), slug = VALUES(slug);
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `shop` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+-- Nav menu (category)
+INSERT INTO nav_menu (id, name, path, parent_id, depth, sort_order, visible_yn)
+VALUES (100, 'Rackets', NULL, NULL, 1, 1, 'Y')
+ON DUPLICATE KEY UPDATE name = VALUES(name);
 
-USE `shop`;
+-- Product
+INSERT INTO products (
+  id, brand_id, title, series, description, price, status,
+  slug, category_id, image_url, image_path
+)
+VALUES (
+  1203, 3, 'VCORE 100 2023', 'VCORE', '...', 289000, 'ACTIVE',
+  'vcore-100-2023', 100, '/uploads/products/1203/main.jpg', 'D:/uploads/.../main.jpg'
+)
+ON DUPLICATE KEY UPDATE title = VALUES(title), price = VALUES(price);
 
---
--- Dumping data for table `__init_log`
---
+-- Product specs (PK=FK)
+INSERT INTO product_specs (
+  product_id, head_size_sq_in, unstrung_weight_g, balance_mm, length_in,
+  pattern_main, pattern_cross, stiffness_ra
+)
+VALUES (1203, 100, 300, 320, 27.0, 16, 19, 65)
+ON DUPLICATE KEY UPDATE stiffness_ra = VALUES(stiffness_ra);
 
-LOCK TABLES `__init_log` WRITE;
-/*!40000 ALTER TABLE `__init_log` DISABLE KEYS */;
-INSERT INTO `__init_log` VALUES (1,'2026-02-25 11:21:24','01_schema.sql executed'),(2,'2026-02-25 11:21:24','02_seed.sql executed');
-/*!40000 ALTER TABLE `__init_log` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+-- SKU
+INSERT INTO skus (id, product_id, price, sku_code, is_active, grip_size)
+VALUES (2001, 1203, 289000, 'VCORE100-2023-G2', 1, 'G2')
+ON DUPLICATE KEY UPDATE sku_code = VALUES(sku_code);
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+-- Inventory (PK=FK)
+INSERT INTO inventory (sku_id, stock_qty, safety_stock_qty)
+VALUES (2001, 10, 2)
+ON DUPLICATE KEY UPDATE stock_qty = VALUES(stock_qty);
 
--- Dump completed on 2026-02-25 12:36:30
+-- Cart (1:1 user)
+INSERT INTO carts (id, user_id)
+VALUES (1, 10)
+ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
 
+-- Cart item
+INSERT INTO cart_items (id, cart_id, sku_id, quantity)
+VALUES (100, 1, 2001, 2)
+ON DUPLICATE KEY UPDATE quantity = VALUES(quantity);
+
+-- Order
+INSERT INTO orders (
+  id, user_id, order_no, status, total_price, receiver_name, receiver_phone,
+  zip, address1, address2, memo
+)
+VALUES (
+  200, 10, '20260226-0001', 'PENDING', 578000, '김OO', '010-0000-0000',
+  '06236', '...', NULL, '문앞에 두세요'
+)
+ON DUPLICATE KEY UPDATE status = VALUES(status);
+
+-- Order item
+INSERT INTO order_items (
+  id, order_id, sku_id, product_name_snapshot, brand_name_snapshot, grip_snapshot,
+  unit_price, quantity, line_total
+)
+VALUES (
+  300, 200, 2001, 'VCORE 100 2023', 'YONEX', 'G2',
+  289000, 2, 578000
+)
+ON DUPLICATE KEY UPDATE line_total = VALUES(line_total);
