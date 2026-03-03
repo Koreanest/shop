@@ -1,7 +1,5 @@
 package com.hbk.legacy;
 
-import com.hbk.dto.MainVideoRequest;
-import com.hbk.dto.MainVideoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

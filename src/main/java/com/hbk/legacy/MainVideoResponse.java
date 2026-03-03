@@ -1,4 +1,4 @@
-package com.hbk.dto;
+package com.hbk.legacy;
 
 import lombok.*;
 
@@ -7,7 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MainVideoRequest {
+public class MainVideoResponse {
+    private Long id;
+    private String videoUrl;
     private String title;
     private String subtitle;
 

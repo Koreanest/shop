@@ -1,7 +1,5 @@
 package com.hbk.legacy;
 
-import com.hbk.dto.MainVideoRequest;
-import com.hbk.dto.MainVideoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
