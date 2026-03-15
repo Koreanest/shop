@@ -39,9 +39,8 @@ public class Cart extends BaseTimeEntity {
     }
 
     public void clearItems() {
-        for (CartItem item : items) {
-            item.setCart(null);
+        for (CartItem item : new ArrayList<>(items)) {
+            removeItem(item);
         }
-        items.clear();
     }
 }

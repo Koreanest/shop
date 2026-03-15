@@ -16,21 +16,21 @@ public class OrderItemResponseDTO {
     private String size;
     private Long productId;
     private String productTitle;
-    private Integer orderPrice;
+    private Integer unitPrice;
     private Integer quantity;
-    private Integer lineAmount;
+    private Integer lineTotal;
 
     public static OrderItemResponseDTO from(OrderItem item) {
         return OrderItemResponseDTO.builder()
                 .orderItemId(item.getId())
                 .skuId(item.getSku().getId())
                 .skuCode(item.getSku().getSkuCode())
-                .size(item.getSku().getGripSize())
-                .productId(item.getSku().getProduct() != null ? item.getSku().getProduct().getId() : null)
-                .productTitle(item.getSku().getProduct() != null ? item.getSku().getProduct().getTitle() : null)
-                .orderPrice(item.getOrderPrice())
+                .size(item.getGripSnapshot())
+                .productId(item.getSku().getProduct().getId())
+                .productTitle(item.getProductNameSnapshot())
+                .unitPrice(item.getUnitPrice())
                 .quantity(item.getQuantity())
-                .lineAmount(item.getLineAmount())
+                .lineTotal(item.getLineTotal())
                 .build();
     }
 }

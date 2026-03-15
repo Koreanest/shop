@@ -5,6 +5,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 !gradle/wrapper/gradle-wrapper.properties
 build/
+uploads/
 
 # Spring Boot
 *.jar
