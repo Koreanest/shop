@@ -52,8 +52,10 @@ public class CartService {
                 ));
 
         Sku sku = skuRepository.findById(request.getSkuId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "SKU가 존재하지 않습니다. id=" + request.getSkuId()));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "상품 옵션을 찾을 수 없습니다."
+                ));
 
         validateSkuActive(sku);
         Inventory inventory = getInventoryOrThrow(sku);
@@ -61,18 +63,19 @@ public class CartService {
         CartItem existingItem = cartItemRepository.findByCart_IdAndSku_Id(cart.getId(), sku.getId())
                 .orElse(null);
 
-        if (existingItem != null) {
-            int newQty = existingItem.getQuantity() + request.getQuantity();
-            validateStock(inventory, newQty);
-            existingItem.changeQuantity(newQty);
-        } else {
-            validateStock(inventory, request.getQuantity());
+        int currentQty = existingItem != null ? existingItem.getQuantity() : 0;
+        int addQty = request.getQuantity();
+        int totalQty = currentQty + addQty;
 
+        validateStockForAdd(inventory, totalQty);
+
+        if (existingItem != null) {
+            existingItem.changeQuantity(totalQty);
+        } else {
             CartItem newItem = CartItem.builder()
                     .sku(sku)
-                    .quantity(request.getQuantity())
+                    .quantity(addQty)
                     .build();
-
             cart.addItem(newItem);
         }
 
@@ -84,8 +87,10 @@ public class CartService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "장바구니가 없습니다."));
 
         CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "장바구니 항목이 없습니다. id=" + cartItemId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "장바구니 상품을 찾을 수 없습니다."
+                ));
 
         validateCartOwnership(cart, item);
 
@@ -93,7 +98,7 @@ public class CartService {
         validateSkuActive(sku);
 
         Inventory inventory = getInventoryOrThrow(sku);
-        validateStock(inventory, request.getQuantity());
+        validateStockForUpdate(inventory, request.getQuantity());
 
         item.changeQuantity(request.getQuantity());
 
@@ -105,8 +110,10 @@ public class CartService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "장바구니가 없습니다."));
 
         CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "장바구니 항목이 없습니다. id=" + cartItemId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "장바구니 상품을 찾을 수 없습니다."
+                ));
 
         validateCartOwnership(cart, item);
 
@@ -117,36 +124,67 @@ public class CartService {
 
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "회원이 존재하지 않습니다. id=" + memberId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "회원을 찾을 수 없습니다."
+                ));
     }
 
     private Inventory getInventoryOrThrow(Sku sku) {
         if (sku.getInventory() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "재고 정보가 없는 SKU입니다. skuId=" + sku.getId());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "재고 정보가 없습니다."
+            );
         }
         return sku.getInventory();
     }
 
-    private void validateStock(Inventory inventory, int requestedQty) {
-        if (requestedQty < 1) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수량은 1 이상이어야 합니다.");
+    private void validateStockForAdd(Inventory inventory, int totalQty) {
+        if (totalQty < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수량은 1개 이상이어야 합니다.");
         }
-        if (inventory.getStockQty() == null || requestedQty > inventory.getStockQty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "재고를 초과했습니다.");
+
+        Integer stock = inventory.getStockQty();
+        if (stock == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "재고 정보가 없습니다.");
+        }
+
+        if (totalQty > stock) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "장바구니 수량이 재고를 초과했습니다."
+            );
+        }
+    }
+
+    private void validateStockForUpdate(Inventory inventory, int nextQty) {
+        if (nextQty < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수량은 1개 이상이어야 합니다.");
+        }
+
+        Integer stock = inventory.getStockQty();
+        if (stock == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "재고 정보가 없습니다.");
+        }
+
+        if (nextQty > stock) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "변경 수량이 재고를 초과했습니다."
+            );
         }
     }
 
     private void validateSkuActive(Sku sku) {
         if (sku.getIsActive() != null && !sku.getIsActive()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비활성 SKU는 담을 수 없습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "판매 중인 옵션만 담을 수 있습니다.");
         }
     }
 
     private void validateCartOwnership(Cart cart, CartItem item) {
         if (item.getCart() == null || !item.getCart().getId().equals(cart.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 장바구니 항목만 수정할 수 있습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 장바구니만 수정할 수 있습니다.");
         }
     }
 }
