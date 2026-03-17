@@ -23,7 +23,7 @@ public class CartItemResponseDTO {
 
     private Integer unitPrice;
     private Integer quantity;
-    private Integer lineAmount;
+    private Integer lineTotal;
 
     private Integer stockQty;
     private Integer safetyStockQty;
@@ -40,7 +40,7 @@ public class CartItemResponseDTO {
                 .imageUrl(item.getSku() != null && item.getSku().getProduct() != null ? item.getSku().getProduct().getImageUrl() : null)
                 .unitPrice(item.getSku() != null ? item.getSku().getPrice() : 0)
                 .quantity(item.getQuantity())
-                .lineAmount(item.getSku() != null && item.getSku().getPrice() != null
+                .lineTotal(item.getSku() != null && item.getSku().getPrice() != null
                         ? item.getSku().getPrice() * item.getQuantity()
                         : 0)
                 .stockQty(item.getSku() != null && item.getSku().getInventory() != null ? item.getSku().getInventory().getStockQty() : 0)

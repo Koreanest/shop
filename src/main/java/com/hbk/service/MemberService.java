@@ -1,6 +1,7 @@
 package com.hbk.service;
 
 import com.hbk.dto.LoginRequest;
+import com.hbk.dto.MemberMeResponse;
 import com.hbk.dto.MemberRegisterRequest;
 import com.hbk.entity.Member;
 import com.hbk.global.exception.BadRequestException;
@@ -10,9 +11,11 @@ import com.hbk.global.exception.UnauthorizedException;
 import com.hbk.repository.MemberRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +52,7 @@ public class MemberService {
                 .companyName(request.getCompanyName())
                 .position(request.getPosition())
                 .tel(request.getTel())
+                .zip(request.getZip())
                 .address(request.getAddress())
                 .detailAddress(request.getDetailAddress())
                 .build();
@@ -82,5 +86,26 @@ public class MemberService {
     // 로그아웃
     public void logout(HttpSession session) {
         session.invalidate();
+    }
+
+    //회원정보 배송지 입력
+    public MemberMeResponse getMe(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
+
+        String fullName = ((member.getLastName() == null ? "" : member.getLastName())
+                + (member.getFirstName() == null ? "" : member.getFirstName())).trim();
+
+        return MemberMeResponse.builder()
+                .memberId(member.getId())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .name(fullName)
+                .email(member.getEmail())
+                .tel(member.getTel())
+                .zip(member.getZip())
+                .address1(member.getAddress())
+                .address2(member.getDetailAddress())
+                .build();
     }
 }

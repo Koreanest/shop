@@ -109,7 +109,7 @@ public class OrderService {
                 ));
 
         validateOrderItemsExist(order);
-        changeOrderStatus(order, OrderStatus.CANCELLED);
+        changeOrderStatus(order, OrderStatus.CANCELED);
 
         for (OrderItem item : order.getItems()) {
             restoreStockForOrderItem(item);
@@ -456,26 +456,26 @@ public class OrderService {
 
         switch (current) {
             case PENDING -> {
-                if (next != OrderStatus.PAID && next != OrderStatus.CANCELLED) {
+                if (next != OrderStatus.PAID && next != OrderStatus.CANCELED) {
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "PENDING 상태에서는 PAID 또는 CANCELLED로만 변경할 수 있습니다."
+                            "PENDING 상태에서는 PAID 또는 CANCELED로만 변경할 수 있습니다."
                     );
                 }
             }
             case PAID -> {
-                if (next != OrderStatus.PREPARING && next != OrderStatus.CANCELLED) {
+                if (next != OrderStatus.PREPARING && next != OrderStatus.CANCELED) {
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "PAID 상태에서는 PREPARING 또는 CANCELLED로만 변경할 수 있습니다."
+                            "PAID 상태에서는 PREPARING 또는 CANCELED로만 변경할 수 있습니다."
                     );
                 }
             }
             case PREPARING -> {
-                if (next != OrderStatus.SHIPPED && next != OrderStatus.CANCELLED) {
+                if (next != OrderStatus.SHIPPED && next != OrderStatus.CANCELED) {
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "PREPARING 상태에서는 SHIPPED 또는 CANCELLED로만 변경할 수 있습니다."
+                            "PREPARING 상태에서는 SHIPPED 또는 CANCELED로만 변경할 수 있습니다."
                     );
                 }
             }
@@ -491,7 +491,7 @@ public class OrderService {
                     HttpStatus.BAD_REQUEST,
                     "완료된 주문은 상태를 변경할 수 없습니다."
             );
-            case CANCELLED -> throw new ResponseStatusException(
+            case CANCELED -> throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "취소된 주문은 상태를 변경할 수 없습니다."
             );

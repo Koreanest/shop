@@ -12,18 +12,26 @@ USE shop;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =========================
--- users
+-- members
 -- =========================
-CREATE TABLE users (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '유저 PK',
+CREATE TABLE members (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '회원 PK',
+  first_name VARCHAR(60) NULL COMMENT '이름',
+  last_name VARCHAR(60) NULL COMMENT '성',
   email VARCHAR(120) NOT NULL COMMENT '이메일(로그인)',
-  password_hash VARCHAR(255) NOT NULL COMMENT '비밀번호 해시',
-  name VARCHAR(60) NOT NULL COMMENT '이름',
-  role VARCHAR(20) NOT NULL DEFAULT 'ADMIN' COMMENT '권한(ADMIN/USER)',
+  password VARCHAR(255) NOT NULL COMMENT '비밀번호 해시',
+  gender VARCHAR(20) NULL COMMENT '성별',
+  company_name VARCHAR(100) NULL COMMENT '회사명',
+  position VARCHAR(100) NULL COMMENT '직급',
+  tel VARCHAR(30) NULL COMMENT '전화번호',
+  zip VARCHAR(20) NULL COMMENT '우편번호',
+  address VARCHAR(255) NULL COMMENT '기본주소',
+  detail_address VARCHAR(255) NULL COMMENT '상세주소',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
   PRIMARY KEY (id),
-  UNIQUE KEY uk_users_email (email)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='users';
+  UNIQUE KEY uk_members_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='members';
 
 -- =========================
 -- brands
@@ -161,12 +169,12 @@ CREATE TABLE inventory (
 -- =========================
 CREATE TABLE carts (
   id BIGINT NOT NULL AUTO_INCREMENT COMMENT '장바구니 PK',
-  user_id BIGINT NOT NULL COMMENT '유저 FK(1:1)',
+  member_id BIGINT NOT NULL COMMENT '회원 FK(1:1)',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
   PRIMARY KEY (id),
-  UNIQUE KEY uk_carts_user_id (user_id),
-  CONSTRAINT fk_carts_user
-    FOREIGN KEY (user_id) REFERENCES users(id)
+  UNIQUE KEY uk_carts_member_id (member_id),
+  CONSTRAINT fk_carts_member
+    FOREIGN KEY (member_id) REFERENCES members(id)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='carts';
 
@@ -194,7 +202,7 @@ CREATE TABLE cart_items (
 -- =========================
 CREATE TABLE orders (
   id BIGINT NOT NULL AUTO_INCREMENT COMMENT '주문 PK',
-  user_id BIGINT NOT NULL COMMENT '주문자 FK',
+  member_id BIGINT NOT NULL COMMENT '주문자 FK',
   order_no VARCHAR(40) NOT NULL COMMENT '주문번호',
   status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT '주문상태',
   total_price INT NOT NULL DEFAULT 0 COMMENT '총액',
@@ -207,9 +215,9 @@ CREATE TABLE orders (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
   PRIMARY KEY (id),
   UNIQUE KEY uk_orders_order_no (order_no),
-  KEY idx_orders_user_id (user_id),
-  CONSTRAINT fk_orders_user
-    FOREIGN KEY (user_id) REFERENCES users(id)
+  KEY idx_orders_member_id (member_id),
+  CONSTRAINT fk_orders_member
+    FOREIGN KEY (member_id) REFERENCES members(id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='orders';
 
@@ -226,6 +234,8 @@ CREATE TABLE order_items (
   unit_price INT NOT NULL DEFAULT 0 COMMENT '단가',
   quantity INT NOT NULL DEFAULT 1 COMMENT '수량',
   line_total INT NOT NULL DEFAULT 0 COMMENT '라인합계',
+  created_at DATETIME(6) NOT NULL COMMENT '생성일시',
+  updated_at DATETIME(6) NOT NULL COMMENT '수정일시',
   PRIMARY KEY (id),
   KEY idx_order_items_order_id (order_id),
   KEY idx_order_items_sku_id (sku_id),
