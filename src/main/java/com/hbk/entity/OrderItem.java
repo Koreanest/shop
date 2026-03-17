@@ -24,6 +24,9 @@ public class OrderItem extends BaseTimeEntity {
     @JoinColumn(name = "sku_id", nullable = false)
     private Sku sku;
 
+    @Column(name = "product_name_snapshot", nullable = false, length = 255)
+    private String productNameSnapshot;
+
     @Column(name = "order_price", nullable = false)
     private Integer orderPrice;
 

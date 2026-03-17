@@ -2,6 +2,7 @@ package com.hbk.controller;
 
 
 import com.hbk.dto.LoginRequest;
+import com.hbk.dto.MemberMeResponse;
 import com.hbk.dto.MemberRegisterRequest;
 import com.hbk.service.MemberService;
 import jakarta.servlet.http.HttpSession;
@@ -53,11 +54,15 @@ public class MemberController {
         System.out.println("ME SESSION ID = " + session.getId());
         System.out.println("ME MEMBER ID = " + session.getAttribute("LOGIN_MEMBER_ID"));
 
-        Object memberId = session.getAttribute("LOGIN_MEMBER_ID");
-        if (memberId == null) {
+        Object memberIdObj = session.getAttribute("LOGIN_MEMBER_ID");
+        if (memberIdObj == null) {
             return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.ok(Map.of("memberId", memberId));
+
+        Long memberId = ((Number) memberIdObj).longValue();
+        MemberMeResponse response = memberService.getMe(memberId);
+
+        return ResponseEntity.ok(response);
     }
 
     // 로그아웃

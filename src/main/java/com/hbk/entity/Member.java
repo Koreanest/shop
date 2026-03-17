@@ -45,4 +45,7 @@ public class Member extends BaseTimeEntity {
 
     @Column(length = 255)
     private String detailAddress;
+
+    @Column(name = "zip", length = 20)
+    private String zip;
 }

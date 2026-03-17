@@ -29,7 +29,7 @@ enum은 대문자 문자열
 
 ## 공통 Enum 표
 -ProductStatus: DRAFT/ACTIVE/HIDDEN
--OrderStatus: PENDING/PAID/SHIPPED/DELIVERED/CANCELLED
+-OrderStatus: PENDING/PAID/SHIPPED/DELIVERED/CANCELED
 -GripSize: G1~G5
 
 ## 정렬(sort)

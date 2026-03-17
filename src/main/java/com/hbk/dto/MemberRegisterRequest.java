@@ -17,4 +17,5 @@ public class MemberRegisterRequest {
     private String tel;
     private String address;
     private String detailAddress;
+    private String zip;
 }
