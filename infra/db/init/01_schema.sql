@@ -234,6 +234,8 @@ CREATE TABLE order_items (
   unit_price INT NOT NULL DEFAULT 0 COMMENT '단가',
   quantity INT NOT NULL DEFAULT 1 COMMENT '수량',
   line_total INT NOT NULL DEFAULT 0 COMMENT '라인합계',
+  created_at DATETIME(6) NOT NULL COMMENT '생성일시',
+  updated_at DATETIME(6) NOT NULL COMMENT '수정일시',
   PRIMARY KEY (id),
   KEY idx_order_items_order_id (order_id),
   KEY idx_order_items_sku_id (sku_id),
