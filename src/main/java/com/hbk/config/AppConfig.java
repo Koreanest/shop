@@ -44,7 +44,7 @@ public class AppConfig implements WebMvcConfigurer {
                 .toString();
 
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(location);
+                .addResourceLocations("file:///D:/dev_yn/workspace/shop/uploads/");
     }
 
     /* =========================
