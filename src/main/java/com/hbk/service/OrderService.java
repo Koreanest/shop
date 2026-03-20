@@ -334,15 +334,16 @@ public class OrderService {
         }
 
         int stockQty = inventory.getStockQty();
-        int safetyStockQty = inventory.getSafetyStockQty() == null ? 0 : inventory.getSafetyStockQty();
+//        int safetyStockQty = inventory.getSafetyStockQty() == null ? 0 : inventory.getSafetyStockQty();
 
         if (requestedQty > stockQty) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "재고를 초과했습니다.");
         }
 
-        if (stockQty - requestedQty < safetyStockQty) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "안전재고 이하로는 주문할 수 없습니다.");
-        }
+// [수정됨] 안전재고는 관리자 알림용이므로 고객의 결제를 막지 않도록 주석 처리합니다.
+//        if (stockQty - requestedQty < safetyStockQty) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "안전재고 이하로는 주문할 수 없습니다.");
+//        }
     }
 
     /**
